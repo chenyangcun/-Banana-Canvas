@@ -2,13 +2,11 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# AI Studio中运行
 
-This contains everything you need to run your app locally.
+AI Studio演示地址: https://ai.studio/apps/drive/1I8vIZhBkAZs9mzhRb7aPeXhAEJ09EX9o
 
-View your app in AI Studio: https://ai.studio/apps/drive/1I8vIZhBkAZs9mzhRb7aPeXhAEJ09EX9o
-
-## Run Locally
+## 本地运行
 
 **Prerequisites:**  Node.js
 
