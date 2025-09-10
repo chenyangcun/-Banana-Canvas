@@ -1,5 +1,5 @@
 {
-  "name": "AI 图像编辑器",
+  "name": "香蕉画布",
   "description": "一个允许用户上传多张图片并使用自定义 AI 提示词进行编辑的应用。它支持迭代修改，实现创造性的图像转换。",
   "author": "chenyangcun",
   "requestFramePermissions": []

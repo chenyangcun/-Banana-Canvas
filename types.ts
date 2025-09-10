@@ -12,3 +12,7 @@ export interface ImageState {
   originalMimeType: string;
   history: ImageHistory[];
 }
+
+export type Mode = 'edit' | 'generate' | 'video';
+
+export type Adjustments = { brightness: number, contrast: number, saturation: number };

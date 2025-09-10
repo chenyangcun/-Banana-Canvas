@@ -9,6 +9,55 @@ if (!API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY! });
 
+const handleGeminiError = (error: any, defaultKey: string): Error => {
+  console.error("Gemini API Error:", error);
+
+  let rawMessage = '';
+
+  if (error && typeof error.message === 'string') {
+    // The SDK sometimes stringifies the actual error object in the message
+    try {
+      const parsed = JSON.parse(error.message);
+      if (parsed.error) {
+        rawMessage = parsed.error.message || 'No details provided.';
+        const status = parsed.error.status;
+        const code = parsed.error.code;
+
+        if (status === 'RESOURCE_EXHAUSTED' || code === 429) {
+          return new Error('error.api.resourceExhausted');
+        }
+        if (code >= 500) {
+            return new Error('error.api.serverError');
+        }
+      }
+    } catch (e) {
+      // The message is not a JSON string, treat it as the raw message.
+      rawMessage = error.message;
+    }
+  }
+
+  // Check the raw message for keywords if parsing failed or didn't yield a specific error
+  if (rawMessage) {
+    const lowerCaseMessage = rawMessage.toLowerCase();
+    if (lowerCaseMessage.includes('quota')) {
+        return new Error('error.api.resourceExhausted');
+    }
+    if (lowerCaseMessage.includes('api key not valid')) {
+        return new Error('error.api.invalidKey');
+    }
+    if (lowerCaseMessage.includes('rpc failed') || lowerCaseMessage.includes('server error')) {
+        return new Error('error.api.serverError');
+    }
+    // For other cases, return the specific message from the API.
+    // App.tsx will display this raw message.
+    return new Error(rawMessage);
+  }
+
+  // Fallback to the default error key for the specific operation
+  return new Error(defaultKey);
+};
+
+
 export const generateImageFromPrompt = async (
   prompt: string
 ): Promise<{ newImageBase64: string; newMimeType: string } | null> => {
@@ -34,8 +83,7 @@ export const generateImageFromPrompt = async (
     return null;
 
   } catch (error) {
-    console.error("使用 Gemini API 生成图片时出错:", error);
-    throw new Error("error.generateFailed");
+    throw handleGeminiError(error, "error.generateFailed");
   }
 };
 
@@ -88,8 +136,7 @@ export const editImageWithPrompt = async (
     return null;
 
   } catch (error) {
-    console.error("使用 Gemini API 编辑图片时出错:", error);
-    throw new Error("error.editFailed");
+    throw handleGeminiError(error, "error.editFailed");
   }
 };
 
@@ -147,12 +194,10 @@ export const generateVideoFromPrompt = async (
     return URL.createObjectURL(videoBlob);
 
   } catch (error: any) {
-    console.error("使用 Gemini API 生成视频时出错:", error);
-    // If it's already a key, re-throw it. Otherwise, wrap it.
     const knownErrors = ['error.video.noLink', 'error.video.downloadFailed'];
     if (knownErrors.includes(error.message)) {
         throw error;
     }
-    throw new Error("error.video.generationFailed");
+    throw handleGeminiError(error, "error.video.generationFailed");
   }
 };

@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext, useMemo } from 'react';
-import zh from './translations.zh';
-import en from './translations.en';
+import zh from './translations.zh.ts';
+import en from './translations.en.ts';
 
 export const translations = {
   zh,
